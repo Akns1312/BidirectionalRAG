@@ -1,0 +1,40 @@
+# Environment variables — never commit API keys
+.env
+
+# Virtual environment — machine specific, never commit
+venv/
+
+# Vector DB — large, machine specific, re-created on deploy
+chroma_store/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# HuggingFace model cache — large, re-downloaded on deploy
+.cache/
+
+# Egg info
+*.egg-info/
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test cache
+.pytest_cache/
+.coverage

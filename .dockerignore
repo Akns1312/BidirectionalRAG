@@ -1,0 +1,10 @@
+# Never copy these into the Docker image
+venv/
+.env
+chroma_store/
+__pycache__/
+*.pyc
+.git/
+.github/
+*.log
+.pytest_cache/

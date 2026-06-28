@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  app:
+    # ── Build ───────────────────────────────────────────────────────────────
+    # Build from the Dockerfile in the current directory.
+    # "." means look for Dockerfile here.
+    build: .
+
+    # ── Image name ──────────────────────────────────────────────────────────
+    # Tag the built image with this name.
+    image: rag-pipeline:latest
+
+    # ── Port mapping ────────────────────────────────────────────────────────
+    # host_port:container_port
+    # Maps port 8000 on your machine to port 8000 inside the container.
+    # Access your API at http://localhost:8000
+    ports:
+      - "8000:8000"
+
+    # ── Environment variables ────────────────────────────────────────────────
+    # Reads from your .env file — API keys stay out of this file.
+    # docker-compose automatically loads .env from the same directory.
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - LLM_MODEL=${LLM_MODEL}
+      - CHROMA_PATH=/app/chroma_store
+      - CHUNK_SIZE=${CHUNK_SIZE:-400}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-50}
+      - TOP_K=${TOP_K:-5}
+
+    # ── Volumes ──────────────────────────────────────────────────────────────
+    # Persist ChromaDB data across container restarts.
+    # Without this, all stored knowledge is lost every time the container stops.
+    # chroma_data volume → mounted at /app/chroma_store inside container.
+    volumes:
+      - chroma_data:/app/chroma_store
+
+    # ── Restart policy ────────────────────────────────────────────────────────
+    # Automatically restart the container if it crashes.
+    # "unless-stopped" = restart always except when manually stopped.
+    restart: unless-stopped
+
+    # ── Health check ──────────────────────────────────────────────────────────
+    # Docker checks this every 30 seconds to verify the app is healthy.
+    # If /health returns non-200 three times in a row, Docker restarts the container.
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s      # check every 30 seconds
+      timeout: 10s       # wait max 10 seconds for response
+      retries: 3         # restart after 3 consecutive failures
+      start_period: 60s  # wait 60s before first check (model loading time)
+
+# ── Named volumes ─────────────────────────────────────────────────────────────
+# Declares the volume used above.
+# Docker manages this volume — data persists even if container is removed.
+# To see volumes: docker volume ls
+# To delete: docker volume rm bidirectionalrag_chroma_data
+volumes:
+  chroma_data:
