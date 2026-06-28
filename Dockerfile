@@ -28,7 +28,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ── spaCy model ───────────────────────────────────────────────────────────────
 # Presidio (PII guard) needs this NLP model.
 # Downloaded once during build — baked into image permanently.
-RUN python -m spacy download en_core_web_lg
+RUN python -m spacy download en_core_web_sm
 
 # ── HuggingFace embedding model ───────────────────────────────────────────────
 # Pre-download the MiniLM embedding model during build.
@@ -63,4 +63,4 @@ EXPOSE 8000
 # --host 0.0.0.0  — listen on all network interfaces (required for Docker)
 # --port 8000     — port to listen on
 # --workers 1     — single worker (Render free tier has limited RAM)
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
